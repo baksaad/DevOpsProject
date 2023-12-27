@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "./node_modules/.bin/mocha test/*.js"
+    "test": "./node_modules/.bin/mocha test/*.js",
+    "health_check": "echo 'Health check command goes here'"
   },
   "author": "Sergei Kudinov",
   "license": "",

@@ -1,0 +1,56 @@
+- hosts: all
+  become: true
+
+  tasks:
+    - name: Clone and install application
+      command: git clone https://baksaad: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@github.com/baksaad/Project_Ballet_Bakir.git
+
+
+      args:
+        chdir: "/home/vagrant/"
+
+    - name: Update package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Node.js and npm
+      become: true
+      apt:
+        name:
+          - nodejs
+          - npm
+        state: present
+
+    - name: Update package cache
+      apt:
+        update_cache: yes
+
+    - name: Install libatomic1
+      apt:
+        name: "libatomic1"
+        state: present
+      environment:
+        DEBIAN_FRONTEND: noninteractive
+      when: "'22.04' in ansible_distribution_version or 'jammy' in ansible_distribution_version"
+
+    - name: Install database (Redis)
+      apt:
+        name: "redis-server"
+        state: present
+
+    - name: Start Redis service
+      systemd:
+        name: redis-server
+        state: started
+        enabled: yes
+
+    - name: Health check of your application
+      command: npm run health_check
+      args:
+        chdir: "/home/vagrant/Project_Ballet_Bakir/userapi"
+
+    - name: Install language runtime
+      apt:
+        name: "nodejs"
+        state: present
+      become: yes
