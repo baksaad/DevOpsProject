@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ece-userapi-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ece-userapi
+  template:
+    metadata:
+      labels:
+        app: ece-userapi
+    spec:
+      containers:
+      - name: ece-userapi-container
+        image: baksaad/myapp:v1  
+        ports:
+        - containerPort: 3000
+        env:
+          - name: REDIS_HOST
+            value: "ece-userapi-redis-service"
+          - name: REDIS_PORT
+            value: "6379"

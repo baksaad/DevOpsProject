@@ -1,43 +1,40 @@
-const redis = require("redis");
-const configure = require('./configure');
+var redis = require("redis");
+const configure = require('./configure')
 
-const config = configure();
+function getEnvWithDefault(key, defaultValue) {
+  const value = process.env[key];
+  return value !== undefined ? value : defaultValue;
+}
 
-const db = redis.createClient({
-  host: config.redis.host,
-  port: config.redis.port,
-  retry_strategy: (options) => {
-    if (options.error && options.error.code === 'ECONNREFUSED') {
-      // Connection refused, retry after 3 seconds
-      console.error('Redis connection refused. Retrying...');
-      return 3000;
+const config = configure()
+
+const redisHost = getEnvWithDefault("REDIS_HOST", "localhost");
+const redisPort = getEnvWithDefault("REDIS_PORT", "6379");
+const redisPassword = getEnvWithDefault("REDIS_PASSWORD", "");
+var db = redis.createClient({
+  host: redisHost,
+  port: redisPort,
+  password: redisPassword,
+  retry_strategy: function(options) {
+    if (options.error && options.error.code === "ECONNREFUSED") {
+      // End reconnecting if the server refuses the connection
+      return new Error("The server refused the connection");
     }
-    if (options.total_retry_time > 1000 * 60 * 5) {
-      // Retry for up to 5 minutes
-      console.error('Retry time exhausted. Exiting.');
-      process.exit(1);
+    if (options.total_retry_time > 1000 * 60 * 60) {
+      // End reconnecting after a specific timeout
+      return new Error("Retry time exhausted");
     }
     if (options.attempt > 10) {
-      // Max attempts reached, return an error
-      console.error('Max attempts reached. Exiting.');
-      process.exit(1);
+      // End reconnecting after a maximum number of tries
+      return undefined;
     }
-    // Retry with an increasing delay
+    // reconnect after
     return Math.min(options.attempt * 100, 3000);
-  },
+  }
 });
 
-process.on('SIGINT', function () {
+process.on('SIGINT', function() {
   db.quit();
-  process.exit();
-});
-
-db.on('connect', function () {
-  console.log('Connected to Redis');
-});
-
-db.on('error', function (err) {
-  console.error('Redis connection error:', err);
 });
 
 module.exports = db;
