@@ -19,7 +19,7 @@ services:
     image: redis:alpine
     volumes:
       - ./data/redis:/data
-    command: redis-server 
+    command: redis-server --appendonly yes --requirepass ""
 
 volumes:
   redis-data:
