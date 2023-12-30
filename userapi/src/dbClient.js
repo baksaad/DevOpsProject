@@ -1,19 +1,17 @@
-// Userapi/src/dbClient.js
-
 var redis = require("redis");
+const configure = require('./configure')
 
-const { REDIS_HOST, REDIS_PORT } = process.env;
-
+const config = configure()
 var db = redis.createClient({
-  host: REDIS_HOST || 'localhost',
-  port: REDIS_PORT || 6379,
+  host: config.redis.host,
+  port: config.redis.port,
   retry_strategy: () => {
-    return new Error("Retry time exhausted");
+    return new Error("Retry time exhausted")
   }
-});
+})
 
 process.on('SIGINT', function() {
   db.quit();
 });
 
-module.exports = db;
+module.exports = db
