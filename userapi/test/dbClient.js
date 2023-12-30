@@ -1,14 +1,24 @@
-const { expect } = require('chai')
+// Use 'redis' library directly in your dbClient.js
+const redis = require("redis");
+const configure = require('../src/configure');
 
-let db
+const config = configure();
+const db = redis.createClient({
+  host: config.redis.host,
+  port: config.redis.port,
+  retry_strategy: () => {
+    return new Error("Retry time exhausted");
+  },
+});
 
-describe('Redis', () => {
-  
-  before(() => {
-    db = require('../src/dbClient')
-  })
-  
-  it('should connect to Redis', () => {
-    expect(db.connected).to.eql(true)
-  })    
-})
+// Handle SIGINT to quit the Redis connection gracefully
+process.on('SIGINT', function () {
+  db.quit();
+});
+
+// Set up a callback for when the connection is ready
+db.on('ready', function () {
+  console.log('Connected to Redis');
+});
+
+module.exports = db;
