@@ -1,6 +1,7 @@
-// Use 'redis' library directly in your dbClient.js
+// src/dbClient.js
+
 const redis = require("redis");
-const configure = require('../src/configure');
+const configure = require('./configure');
 
 const config = configure();
 const db = redis.createClient({
@@ -21,4 +22,8 @@ db.on('ready', function () {
   console.log('Connected to Redis');
 });
 
-module.exports = db;
+// Export the db object with the flushdb method
+module.exports = {
+  db,
+  flushdb: db.flushdb.bind(db),
+};
