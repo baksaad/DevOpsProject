@@ -1,20 +1,13 @@
-const { expect } = require('chai');
-const userController = require('../src/controllers/user');
-const db = require('../src/dbClient');
+const { expect } = require('chai')
+const userController = require('../src/controllers/user')
+const db = require('../src/dbClient')
 
 describe('User', () => {
   
-  beforeEach((done) => {
+  beforeEach(() => {
     // Clean DB before each test
-    db.flushdb((err, succeeded) => {
-      if (err) {
-        done(err);
-      } else {
-        done();
-      }
-    });
-  });
-
+    db.flushdb()
+  })
   
   describe('Create', () => {
 

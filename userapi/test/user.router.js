@@ -1,27 +1,22 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const app = require('../src/index');
-const db = require('../src/dbClient');
-const userController = require('../src/controllers/user');
+const chai = require('chai')
+const chaiHttp = require('chai-http')
+const app = require('../src/index')
+const db = require('../src/dbClient')
+const userController = require('../src/controllers/user')
 
-chai.use(chaiHttp);
+chai.use(chaiHttp)
 
 describe('User REST API', () => {
-  beforeEach((done) => {
+
+  beforeEach(() => {
     // Clean DB before each test
-    db.flushdb((err, succeeded) => {
-      if (err) {
-        done(err);
-      } else {
-        done();
-      }
-    });
-  });
+    db.flushdb()
+  })
   
   after(() => {
-    app.close();
-    db.quit();
-  });
+    app.close()
+    db.quit()
+  })
 
   describe('POST /user', () => {
 
