@@ -504,10 +504,12 @@ To start both the Redis application and the database, run the following command:
 ```bash
 docker-compose up
 ```
+![Image](./image/20.png)
+
 
 This command launches and connects the containers defined in `docker-compose.yml`. Once the services are up and running, visit [http://localhost:3000](http://localhost:3000) to access our app's home page.
 
-![App Home Page](link_to_app_home_page_image)
+![Image](./image/19.png)
 
 To stop and delete the containers, use the following command:
 
@@ -627,6 +629,7 @@ spec:
    kubectl apply -f services.yaml
    ```
 
+
 3. **Access the Application:**
 
    The service is exposed via a NodePort. Find the NodePort assigned:
@@ -634,6 +637,10 @@ spec:
    ```bash
    kubectl get services
    ```
+   As you can see when we get try to get the yaml that we applied we obtain this result: 
+![Image](./image/6.png)
+
+   Meaning that it was applied correctly 
 
    Visit `http://<minikube-ip>:<NodePort>` to access your application.
 
@@ -655,7 +662,9 @@ minikube dashboard
 
 This command will open your default web browser with the Minikube Dashboard.
 
-//INSERT IMAGE
+![Image](./image/7.png)
+
+All deployements, pods and replica sets are running correctly 
 
 Now, you have the Minikube Dashboard integrated into your Docker orchestration with Kubernetes using Minikube. This provides a visual representation of your cluster, its workloads, and various resources.
 
@@ -812,6 +821,7 @@ spec:
    ```bash
    kubectl get pods -n istio-system
    ```
+![Image](./image/8.png)
 
 3. Access the Kiali dashboard:
 
@@ -872,8 +882,12 @@ To access the Prometheus UI, you need to port-forward to the Prometheus server:
 ```bash
 kubectl port-forward -n prometheus svc/prometheus-server 9090:80
 ```
+![Image](./image/9.png)
+
 
 Open your browser and go to http://localhost:9090 to access the Prometheus UI.
+![Image](./image/10.png)
+
 ## Step 3: Set Up Monitoring with Grafana
 
 1. **Access Grafana Dashboard:**
@@ -889,6 +903,7 @@ Open your browser and go to http://localhost:9090 to access the Prometheus UI.
    ```bash
    kubectl port-forward -n default <grafana-pod-name> 3000:3000
    ```
+![Image](./image/13.png)
 
    Visit http://localhost:3000 and log in with your  credentials (admin/yourpassword).
 
@@ -900,8 +915,10 @@ Open your browser and go to http://localhost:9090 to access the Prometheus UI.
 3. **Link Grafana to Prometheus:**
 
    - Add Prometheus as a data source in Grafana using the Prometheus server URL: 
+![Image](./image/11.png)
 
    - Create a dashboard and set up queries to display monitored application metrics.
+![Image](./image/12.png)
 
 4. **Create Alerts in Grafana:**
 
@@ -910,5 +927,4 @@ Open your browser and go to http://localhost:9090 to access the Prometheus UI.
    - Set up alert conditions (e.g., based on application status).
    - Trigger the alerts by intentionally shutting down your application pods.
 
-Now, you have Prometheus monitoring your application's status, and Grafana is visualizing the metrics. Create alerts in Grafana based on your specific application metrics and requirements.
-
+Now, you have Prometheus monitoring your application's status, and Grafana is visualizing the metrics. 
