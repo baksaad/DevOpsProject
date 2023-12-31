@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  redis:
+    image: redis
+    volumes:
+      - redis_data:/data
+
+  web:
+    build: .
+    ports:
+      - "6789:8080"
+    depends_on:
+      - redis
+    environment:
+      # Define any environment variables your application needs here.
+      # For example, if your application requires a database connection:
+      DB_HOST: db
+      DB_USER: wordpress
+      DB_PASSWORD: wordpress
+      DB_NAME: wordpress
+      # Add Redis connection environment variables
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      
+volumes:
+  redis_data: {}
