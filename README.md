@@ -655,7 +655,7 @@ This command will open your default web browser with the Minikube Dashboard.
 
 Now, you have the Minikube Dashboard integrated into your Docker orchestration with Kubernetes using Minikube. This provides a visual representation of your cluster, its workloads, and various resources.
 
-4. **Stop Minikube:**
+5. **Stop Minikube:**
 
    ```bash
    minikube stop
