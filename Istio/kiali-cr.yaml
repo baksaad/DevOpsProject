@@ -1,0 +1,24 @@
+apiVersion: kiali.io/v1alpha1
+kind: Kiali
+metadata:
+  name: default
+spec:
+  deployment:
+    inaccessibleNamespaces:
+      - kube-system
+  jaegerIntegration:
+    deployment:
+      inaccessibleNamespaces:
+        - kube-system
+  grafanaIntegration:
+    deployment:
+      inaccessibleNamespaces:
+        - kube-system
+  tracing:
+    namespaceSelector: ''
+  customDashboard:
+    grafanaURL: ''
+    k8s: false
+  notification:
+    slack:
+      enabled: false
