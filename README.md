@@ -928,3 +928,8 @@ Open your browser and go to http://localhost:9090 to access the Prometheus UI.
    - Trigger the alerts by intentionally shutting down your application pods.
 
 Now, you have Prometheus monitoring your application's status, and Grafana is visualizing the metrics. 
+
+## Authors : 
+- BALLET Tom
+- BAKIR Mohamed
+GROUP SI04
