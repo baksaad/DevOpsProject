@@ -7,7 +7,7 @@
 Our application is a straightforward Node.js web API created to manage user settings, utilizing a Redis database. It provides essential CRUD (Create, Read, Update, Delete) functionalities for effective user management.
 
 
-# Instructions
+# 1. Instructions
 
 ## Setting Up and Running the Web Application
 
@@ -99,7 +99,6 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
 ```
 
 2. Configure a Redis service as a container with health checks for testing purposes:
@@ -108,56 +107,47 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     services:
       redis:
-        image: redis
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        image: "redis:latest"
         ports:
           - 6379:6379
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 3
 ```
 
 3. Install dependencies and run tests:
 
 ```yaml
-steps:
-  - name: Checkout code
-    uses: actions/checkout@v1
+    steps:
+      - uses: actions/checkout@v3
+      - name: Change directory
+        run: cd ./userapi
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: ./userapi/package-lock.json
+      - run: npm test
+        working-directory: ./userapi
+        env:
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
 
-  - name: Set up Node.js
-    uses: actions/setup-node@v1
-    with:
-      node-version: '14.x'
-      cache: 'npm'
-      cache-dependency-path: userapi/package-lock.json
-
-  - name: Clear npm cache
-    run: npm cache clean --force
-
-  - name: Install dependencies
-    run: npm install --prefix userapi
-
-  - name: Run tests
-    run: npm test --prefix userapi
-    env:
-      REDIS_HOST: localhost
-      REDIS_PORT: 6379
 ```
 
 4. Prepare for deployment by compressing the entire application source code into a ZIP archive and uploading it as an artifact:
 
 ```yaml
-- name: Zip artifact for deployment
-  run: zip release.zip ./* -r
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
 
-- name: Upload artifact for deployment job
-  uses: actions/upload-artifact@v3
-  with:
-    name: node-app
-    path: release.zip
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: node-app
+          path: release.zip
 ```
 
 The CI workflow checks the code, runs tests against a Redis container, and prepares the application for deployment by creating a ZIP artifact.
@@ -188,7 +178,7 @@ The deployment in GitHub Actions relies on the success of the build job artifact
         with:
           app-name: 'bakirballet'
           slot-name: 'production'
-          publish-profile:${{secrets.AZUREAPPSERVICE_PUBLISHPROFILE_SECRET}}
+          publish-profile:${{secrets.AZUREAPPSERVICE_PUBLISHPROFILE_609A242D440D404FA1746EA32350AAEA}}
           package: ./userapi
 ```
 
@@ -203,7 +193,7 @@ By triggering the CI/CD workflow on each push or pull request, we ensure the con
 
 
 
-# Infrastructure as Code (IaC) Approach with Vagrant and Ansible
+# 3. Infrastructure as Code (IaC) Approach with Vagrant and Ansible
 
 We have adopted the Infrastructure as Code (IaC) paradigm to streamline the configuration and provisioning of our virtual environment, ensuring consistency and reproducibility in setting up our development environment.
 
@@ -349,7 +339,7 @@ This Infrastructure as Code approach with Vagrant and Ansible ensures an efficie
 
 
 
-# Build Docker Image
+# 4. Build Docker Image
 
 We've containerized our application using Docker, providing an efficient way to run our application in a consistent environment. Below, we outline the steps to create a Docker image for your Node.js application.
 
@@ -467,20 +457,7 @@ This Docker image enables you to run your Node.js application in a self-containe
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Container Orchestration using Docker Compose
+# 5. Container Orchestration using Docker Compose
 
 To manage multiple containers and orchestrate the deployment of both our Node.js application and the Redis database, we utilize Docker Compose. This allows us to define, configure, and run multi-container Docker applications with ease.
 
