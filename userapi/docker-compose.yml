@@ -10,8 +10,8 @@ services:
       - ./conf:/usr/src/app/conf
     environment:
       - NODE_ENV=production
-      - REDIS_HOST=${REDIS_HOST:-localhost}
-      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     depends_on:
       - redis
 
