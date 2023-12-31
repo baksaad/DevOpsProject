@@ -662,3 +662,249 @@ Now, you have the Minikube Dashboard integrated into your Docker orchestration w
    ```
 
 Now, your Dockerized application is orchestrated using Kubernetes with Minikube. Adjust the YAML files based on your specific configurations and requirements.
+
+# 7. Implementing a Service Mesh with Istio
+
+We've seamlessly integrated Istio into our Kubernetes cluster to establish a powerful service mesh for our application. Istio facilitates advanced traffic management, enabling precise control over routing and version deployments. Below, we provide the essential Istio configuration files along with explanations for each.
+
+## Installation
+
+Ensure Istio is installed in your Kubernetes cluster by following the [official Istio installation guide](https://istio.io/latest/docs/setup/getting-started/).
+
+### Gateway Configuration (`Istio/istio-gateway.yaml`):
+
+The Istio Gateway defines how external traffic enters the cluster. In our case, it exposes our application to external users.
+
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: ece-userapi-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+```
+
+This configuration specifies an Istio Gateway named `ece-userapi-gateway` listening on port 80 for HTTP traffic.
+
+### VirtualService Configuration (`Istio/istio-virtualservice.yaml`):
+
+The Istio VirtualService defines how traffic is routed to different versions of our application.
+
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: ece-userapi-virtualservice
+  namespace: istio-system
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - istio-system/ece-userapi-gateway
+  http:
+  - route:
+    - destination:
+        host: ece-userapi
+        subset: v1
+      weight: 70
+    - destination:
+        host: ece-userapi
+        subset: v2
+      weight: 30
+```
+
+In this configuration, traffic is directed to two subsets (`v1` and `v2`) of our application. We allocate 70% of the traffic to `v1` and 30% to `v2`, demonstrating Istio's powerful traffic-shifting capabilities.
+
+### Kiali Configuration (`Istio/kiali-cr.yaml` and `Istio/kiali.yaml`):
+
+Kiali is an observability console for Istio, providing insights into the service mesh.
+
+- `Istio/kiali-cr.yaml` defines Kiali's custom resource.
+```yaml
+apiVersion: kiali.io/v1alpha1
+kind: Kiali
+metadata:
+  name: default
+spec:
+  deployment:
+    inaccessibleNamespaces:
+      - kube-system
+  jaegerIntegration:
+    deployment:
+      inaccessibleNamespaces:
+        - kube-system
+  grafanaIntegration:
+    deployment:
+      inaccessibleNamespaces:
+        - kube-system
+  tracing:
+    namespaceSelector: ''
+  customDashboard:
+    grafanaURL: ''
+    k8s: false
+  notification:
+    slack:
+      enabled: false
+```
+
+- `Istio/kiali.yaml` specifies the Gateway and VirtualService for Kiali.
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: kiali-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: kiali-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - kiali-gateway
+  http:
+  - route:
+    - destination:
+        host: kiali
+        port:
+          number: 20001
+```
+
+## Usage
+
+1. Apply Istio resources:
+
+   ```bash
+   kubectl apply -f Istio/istio-gateway.yaml
+   kubectl apply -f Istio/istio-virtualservice.yaml
+   kubectl apply -f Istio/kiali-cr.yaml
+   kubectl apply -f Istio/kiali.yaml
+   ```
+
+2. Verify Istio component readiness:
+
+   ```bash
+   kubectl get pods -n istio-system
+   ```
+
+3. Access the Kiali dashboard:
+
+   ```bash
+   istioctl dashboard kiali
+   ```
+
+# Implementing Monitoring with Prometheus and Grafana
+
+In this section, we'll guide you through the process of setting up monitoring for your containerized application using Prometheus and Grafana on your Kubernetes cluster.
+
+## Step 1: Install Prometheus and Grafana using Helm
+
+```bash
+# Add Helm repositories for Prometheus and Grafana
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
+
+helm repo update
+
+# Install Prometheus
+helm install prometheus prometheus-community/prometheus
+
+# Install Grafana
+helm install grafana grafana/grafana
+```
+
+## Step 2: Configure Prometheus (prometheus-additional.yaml)
+
+Create a configuration file (`prometheus-additional.yaml`) for additional Prometheus settings:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-additional-config
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+
+    scrape_configs:
+      - job_name: 'ece-userapi-job'
+        static_configs:
+          - targets: ['ece-userapi-service:3000']
+```
+
+Apply the configuration to your Prometheus deployment:
+
+```bash
+kubectl apply -f prometheus-additional.yaml
+```
+
+Access Prometheus UI:
+
+To access the Prometheus UI, you need to port-forward to the Prometheus server:
+
+```bash
+kubectl port-forward -n prometheus svc/prometheus-server 9090:80
+```
+
+Open your browser and go to http://localhost:9090 to access the Prometheus UI.
+## Step 3: Set Up Monitoring with Grafana
+
+1. **Access Grafana Dashboard:**
+
+   Get the Grafana pod name:
+
+   ```bash
+   kubectl get pods -n default -l "app.kubernetes.io/name=grafana" -o jsonpath="{.items[0].metadata.name}"
+   ```
+
+   Forward the Grafana port to localhost:
+
+   ```bash
+   kubectl port-forward -n default <grafana-pod-name> 3000:3000
+   ```
+
+   Visit http://localhost:3000 and log in with your  credentials (admin/yourpassword).
+
+   You can find your password using this command :
+   ```bash
+   kubectl get secret --namespace grafana grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+   ```
+
+3. **Link Grafana to Prometheus:**
+
+   - Add Prometheus as a data source in Grafana using the Prometheus server URL: 
+
+   - Create a dashboard and set up queries to display monitored application metrics.
+
+4. **Create Alerts in Grafana:**
+
+   - Navigate to the dashboard settings in Grafana.
+   - Add a new notification channel linked to Prometheus.
+   - Set up alert conditions (e.g., based on application status).
+   - Trigger the alerts by intentionally shutting down your application pods.
+
+Now, you have Prometheus monitoring your application's status, and Grafana is visualizing the metrics. Create alerts in Grafana based on your specific application metrics and requirements.
+
