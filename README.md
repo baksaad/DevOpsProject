@@ -158,7 +158,7 @@ jobs:
 The CI workflow checks the code, runs tests against a Redis container, and prepares the application for deployment by creating a ZIP artifact.
 
 
-# Continuous Deployment (CD) with Azure
+## Continuous Deployment (CD) with Azure
 
 To achieve continuous deployment (CD) with Azure, we've set up the deployment configuration in our GitHub Actions workflow. The deployment process involves creating an Azure Web App, providing necessary configurations, and deploying our Node.js application.
 
@@ -829,7 +829,7 @@ spec:
    istioctl dashboard kiali
    ```
 
-# Implementing Monitoring with Prometheus and Grafana
+# 8. Implementing Monitoring with Prometheus and Grafana
 
 In this section, we'll guide you through the process of setting up monitoring for your containerized application using Prometheus and Grafana on your Kubernetes cluster.
 
