@@ -5,15 +5,14 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "./node_modules/.bin/mocha test/*.js",
-    "health_check": "echo 'Health check command goes here'"
+    "test": "./node_modules/.bin/mocha test/*.js"
   },
   "author": "Sergei Kudinov",
   "license": "",
   "dependencies": {
     "express": "^4.17.1",
     "mixme": "^0.5.4",
-    "redis": "^4.6.12"
+    "redis": "^3.1.2"
   },
   "devDependencies": {
     "chai": "^4.3.4",
