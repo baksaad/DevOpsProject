@@ -66,6 +66,9 @@ You'll receive a response:
 ```json
 {"status":"success","msg":"OK"}
 ```
+Just like in this screenshot :
+![Image2](./image/2.png)
+
 
 ## Running Tests
 
@@ -82,6 +85,8 @@ Run tests from the root directory of the project:
 npm run test
 ```
 
+Results : 
+![Image2](./image/1.png)
 
 # 2. Implement CI/CD Pipeline
 
@@ -165,7 +170,7 @@ After following the instructions in the lab 4 tutorial to create an application 
 
 Create an Azure Web App for your application. Below is a screenshot from Azure showcasing the created app:
 
-![Azure Web App](screenshots/azure_web_app.png)
+![Image2](./image/14.png)
 
 ## 3. GitHub Actions Deployment Configuration
 
@@ -181,6 +186,7 @@ The deployment in GitHub Actions relies on the success of the build job artifact
           publish-profile:${{secrets.AZUREAPPSERVICE_PUBLISHPROFILE_609A242D440D404FA1746EA32350AAEA}}
           package: ./userapi
 ```
+![Image2](./image/3.png)
 
 In this workflow section, the application is deployed to Azure Web App. Key parameters, such as the application name, deployment slot name, the secret "AZUREAPPSERVICE_PUBLISHPROFILE" containing the publishing profile information required for secure deployment, and the path to the application package, are specified.
 
@@ -308,6 +314,7 @@ Follow these steps to set up and use your virtual environment:
    ```bash
    vagrant up
    ```
+![Image](./image/4.png)
 
 2. **Provision the VM with Ansible:**
 
@@ -319,7 +326,10 @@ Follow these steps to set up and use your virtual environment:
 
 3. **Access the Application:**
 
-   Once the VM is provisioned, visit http://localhost:3000 to access your application.
+   Once the VM is provisioned, visit VMware Fusion to access your application.
+
+![Image](./image/5.png)
+
 
 4. **Stop the VM:**
 
@@ -330,12 +340,6 @@ Follow these steps to set up and use your virtual environment:
    ```
 
 This Infrastructure as Code approach with Vagrant and Ansible ensures an efficient and reproducible setup of your development environment.
-
-
-
-
-
-
 
 
 
@@ -374,10 +378,6 @@ CMD [ "node", "src/index.js" ]
 
 We've also included a `.dockerignore` file to exclude unnecessary files and folders during the image creation process:
 
-```plaintext
-node_modules
-npm-debug.log
-```
 
 ## Installation
 
@@ -411,7 +411,8 @@ Follow these steps to build and use the Docker image:
 
    Now you can see the image on Docker Hub.
 
-   ![Docker Hub](link_to_dockerhub_image)
+   ![Image](./image/16.png)
+
 
 5. **Pull the Image (Optional):**
 
@@ -424,12 +425,15 @@ Follow these steps to build and use the Docker image:
    ```bash
    docker images
    ```
+![Image](./image/17.png)
+
 
 6. **Run the Container:**
 
    ```bash
    docker run -p 3000:3000 -d <username>/myapp:v1
    ```
+![Image](./image/18.png)
 
    Check if the execution works:
 
@@ -439,7 +443,7 @@ Follow these steps to build and use the Docker image:
 
    Visit http://localhost:3000/ to see the home page of the app.
 
-   ![Hello World](link_to_hello_world_image)
+![Image](./image/19.png)
 
 7. **Stop the Container:**
 
