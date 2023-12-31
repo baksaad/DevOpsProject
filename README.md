@@ -512,3 +512,131 @@ docker-compose down
 ```
 
 This Docker Compose configuration streamlines the management of multiple containers, ensuring seamless deployment and interaction between our Node.js application and the Redis database.
+
+# 6. Docker Orchestration with Kubernetes
+
+We have orchestrated our Dockerized application using Kubernetes. Below are the steps to install a Kubernetes cluster using Minikube and the corresponding YAML files for Kubernetes Manifests.
+
+## Install Minikube
+
+Ensure you have Minikube installed to create a local Kubernetes cluster.
+
+```bash
+# Install Minikube
+brew install minikube
+```
+
+## Kubernetes Manifest YAML Files
+
+### Deployment (deployments.yaml)
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ece-userapi-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ece-userapi
+  template:
+    metadata:
+      labels:
+        app: ece-userapi
+        version: v1
+    spec:
+      containers:
+      - name: ece-userapi-container
+        image: baksaad/myapp:v1  
+        ports:
+        - containerPort: 3000
+        env:
+          - name: REDIS_HOST
+            value: "ece-userapi-redis-service"
+          - name: REDIS_PORT
+            value: "6379"
+```
+
+### Persistent Volume (persistentvolume.yaml)
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: sample-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/pv-1"
+```
+
+### Persistent Volume Claim (persistentvolumeclaim.yaml)
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sample-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+```
+
+### Service (services.yaml)
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-service
+spec:
+  selector:
+    app: sample-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: NodePort
+```
+
+## Usage
+
+1. **Start Minikube Cluster:**
+
+   ```bash
+   minikube start
+   ```
+
+2. **Apply Kubernetes Manifests:**
+
+   ```bash
+   kubectl apply -f deployments.yaml
+   kubectl apply -f persistentvolume.yaml
+   kubectl apply -f persistentvolumeclaim.yaml
+   kubectl apply -f services.yaml
+   ```
+
+3. **Access the Application:**
+
+   The service is exposed via a NodePort. Find the NodePort assigned:
+
+   ```bash
+   kubectl get services
+   ```
+
+   Visit `http://<minikube-ip>:<NodePort>` to access your application.
+
+4. **Stop Minikube:**
+
+   ```bash
+   minikube stop
+   ```
+
+Now, your Dockerized application is orchestrated using Kubernetes with Minikube. Adjust the YAML files based on your specific configurations and requirements.
