@@ -209,7 +209,7 @@ Before getting started, make sure you have the following tools installed:
 
 ### Vagrantfile
 
-Our `Vagrantfile` specifies the configurations for our virtual machine (VM). Here's an example based on your provided information:
+Our `Vagrantfile` specifies the configurations for our virtual machine (VM):
 
 ```ruby
 Vagrant.configure("2") do |config|
