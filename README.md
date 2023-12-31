@@ -633,6 +633,28 @@ spec:
 
    Visit `http://<minikube-ip>:<NodePort>` to access your application.
 
+4. **Minikube Dashboard:**
+   
+ Minikube comes with a built-in dashboard that provides a graphical interface to manage and monitor your Kubernetes cluster. Here's how to enable and access the Minikube Dashboard:
+
+### Enable Dashboard Add-On
+
+```bash
+minikube addons enable dashboard
+```
+
+### Access Dashboard
+
+```bash
+minikube dashboard
+```
+
+This command will open your default web browser with the Minikube Dashboard.
+
+//INSERT IMAGE
+
+Now, you have the Minikube Dashboard integrated into your Docker orchestration with Kubernetes using Minikube. This provides a visual representation of your cluster, its workloads, and various resources.
+
 4. **Stop Minikube:**
 
    ```bash
